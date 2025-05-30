@@ -23,6 +23,6 @@
     "en": "Please upload a résumé to start."
 },
 "footer": {
-    "fr": "Réalisé avec ❤️ par Mahdi Deramgozin",
-    "en": "Made with ❤️ by Mahdi Deramgozin"
+    "fr": "Réalisé avec ❤️ par Mahdi ",
+    "en": "Made with ❤️ by Mahdi "
 }
