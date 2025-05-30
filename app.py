@@ -1,10 +1,8 @@
-
 import streamlit as st
-from resume_parser import extract_text_from_file
-from evaluator import evaluate_resume
+from resume_parser import extract_text_from_file, extract_resume_data
 from lang import get_translation
 
-st.set_page_config(page_title="AI Résumé Evaluator", layout="wide")
+st.set_page_config(page_title="Résumé Analyzer", layout="wide")
 
 # Language selection
 lang_choice = st.sidebar.selectbox("🌐 Langue / Language", ["Français", "English"])
@@ -19,22 +17,53 @@ st.markdown(t["subtitle"][lang])
 uploaded_file = st.file_uploader(t["upload_prompt"][lang], type=["pdf", "txt"])
 
 if uploaded_file:
-    with st.spinner(t["extracting"][lang]):
-        raw_text = extract_text_from_file(uploaded_file)
-        if not raw_text.strip():
-            st.error(t["error_no_text"][lang])
+    text = extract_text_from_file(uploaded_file)
+    
+    if not text.strip():
+        st.error(t["error_no_text"][lang])
+    else:
+        st.subheader(t["text_preview"][lang])
+        st.text_area("", text, height=250)
+
+        # Extract structured data
+        resume_data = extract_resume_data(text)
+
+        # Contact Info
+        st.subheader("Contact Info")
+        contact = resume_data.get("contact", {})
+        if contact:
+            st.write(pd.DataFrame([contact]))
         else:
-            st.subheader(t["text_preview"][lang])
-            st.text_area("", raw_text, height=300)
+            st.write("No contact information found.")
 
-            # Evaluation
-            st.subheader(t["evaluation_title"][lang])
-            score, suggestions = evaluate_resume(raw_text, lang)
+        # Skills
+        st.subheader("Skills")
+        skills = resume_data.get("skills", [])
+        if skills:
+            st.table(pd.DataFrame(skills, columns=["Skill"]))
+        else:
+            st.write("No skills detected.")
 
-            st.metric(t["score"][lang], f"{score}/100")
-            st.markdown("### " + t["suggestions"][lang])
-            for item in suggestions:
-                st.write("- " + item)
+        # Education
+        st.subheader("Education")
+        education = resume_data.get("education", [])
+        if education:
+            st.table(pd.DataFrame(education, columns=["Entry"]))
+        else:
+            st.write("No education section found.")
+
+        # Experience
+        st.subheader("Experience")
+        experience = resume_data.get("experience", [])
+        if experience:
+            st.table(pd.DataFrame(experience, columns=["Entry"]))
+        else:
+            st.write("No experience section found.")
+
+        # Warnings
+        st.subheader("Structure Feedback")
+        for w in resume_data.get("structure_warnings", []):
+            st.warning(w)
 else:
     st.info(t["upload_instruction"][lang])
 
