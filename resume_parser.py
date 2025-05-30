@@ -1,42 +1,22 @@
 import re
 from pdfminer.high_level import extract_text
-import spacy
-
-import spacy
-import subprocess
-import importlib
-
-def load_spacy_model():
-    try:
-        return spacy.load("en_core_web_sm")
-    except OSError:
-        # If model isn't available, download it
-        subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-        importlib.invalidate_caches()
-        return spacy.load("en_core_web_sm")
-
-nlp = load_spacy_model()
 
 def extract_text_from_file(uploaded_file):
-    """Extract plain text from a PDF or .txt file."""
     filename = uploaded_file.name.lower()
-    
+
     if filename.endswith(".txt"):
         return uploaded_file.read().decode("utf-8", errors="ignore")
-
     elif filename.endswith(".pdf"):
         try:
             return extract_text(uploaded_file)
         except Exception as e:
             return ""
-
     return ""
 
 
 def extract_contact_info(text):
     email_match = re.search(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", text)
     phone_match = re.search(r"(\+?\d{1,3})?[\s.-]?\(?\d{2,4}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}", text)
-    
     return {
         "email": email_match.group(0) if email_match else None,
         "phone": phone_match.group(0) if phone_match else None,
@@ -44,7 +24,6 @@ def extract_contact_info(text):
 
 
 def extract_skills(text):
-    """Check each known skill and return a structured table with detection info."""
     skill_list = [
         "python", "java", "c++", "tensorflow", "pytorch", "keras", "opencv",
         "machine learning", "deep learning", "nlp", "sql", "html", "css", 
@@ -55,19 +34,17 @@ def extract_skills(text):
     lowered = text.lower()
 
     for skill in skill_list:
-        detected = skill.lower() in lowered
+        found = skill in lowered
         table.append({
             "Skill": skill.title(),
-            "Detected": "Yes" if detected else "No",
-            "Confidence": "High" if detected else "–"
+            "Detected": "Yes" if found else "No",
+            "Confidence": "High" if found else "–"
         })
 
     return table
 
 
-
 def extract_sections(text):
-    """Rough section extraction by headers (simple heuristic)."""
     headers = ["education", "experience", "skills", "projects", "certifications"]
     lines = text.lower().splitlines()
     sections = {h: [] for h in headers}
