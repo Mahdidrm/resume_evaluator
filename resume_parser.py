@@ -31,16 +31,26 @@ def extract_contact_info(text):
 
 
 def extract_skills(text):
-    """Keyword-based simple skills extractor."""
-    common_skills = [
-        "python", "java", "c++", "machine learning", "deep learning", "tensorflow", "pytorch",
-        "opencv", "nlp", "sql", "html", "css", "linux", "git", "docker", "azure", "aws"
+    """Check each known skill and return a structured table with detection info."""
+    skill_list = [
+        "python", "java", "c++", "tensorflow", "pytorch", "keras", "opencv",
+        "machine learning", "deep learning", "nlp", "sql", "html", "css", 
+        "linux", "git", "docker", "aws", "azure"
     ]
-    found_skills = []
-    for skill in common_skills:
-        if skill.lower() in text.lower():
-            found_skills.append(skill.capitalize())
-    return list(set(found_skills))
+
+    table = []
+    lowered = text.lower()
+
+    for skill in skill_list:
+        detected = skill.lower() in lowered
+        table.append({
+            "Skill": skill.title(),
+            "Detected": "Yes" if detected else "No",
+            "Confidence": "High" if detected else "–"
+        })
+
+    return table
+
 
 
 def extract_sections(text):
