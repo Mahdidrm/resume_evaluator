@@ -1,6 +1,8 @@
 import streamlit as st
+import pandas as pd
 from resume_parser import extract_text_from_file, extract_resume_data
 from lang import get_translation
+
 
 st.set_page_config(page_title="Résumé Analyzer", layout="wide")
 
