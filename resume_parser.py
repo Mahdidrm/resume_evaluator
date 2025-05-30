@@ -1,6 +1,4 @@
-import io
 from pdfminer.high_level import extract_text
-from PyPDF2.errors import PdfReadError
 
 def extract_text_from_file(uploaded_file):
     """Extract text from uploaded PDF or TXT file."""
@@ -11,7 +9,6 @@ def extract_text_from_file(uploaded_file):
 
     elif filename.endswith(".pdf"):
         try:
-            # Use a temporary file buffer
             text = extract_text(uploaded_file)
             return text
         except Exception as e:
@@ -19,4 +16,3 @@ def extract_text_from_file(uploaded_file):
 
     else:
         return ""
-
