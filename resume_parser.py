@@ -2,7 +2,20 @@ import re
 from pdfminer.high_level import extract_text
 import spacy
 
-nlp = spacy.load("en_core_web_sm")
+import spacy
+import subprocess
+import importlib
+
+def load_spacy_model():
+    try:
+        return spacy.load("en_core_web_sm")
+    except OSError:
+        # If model isn't available, download it
+        subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+        importlib.invalidate_caches()
+        return spacy.load("en_core_web_sm")
+
+nlp = load_spacy_model()
 
 def extract_text_from_file(uploaded_file):
     """Extract plain text from a PDF or .txt file."""
