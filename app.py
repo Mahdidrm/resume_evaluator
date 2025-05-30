@@ -36,13 +36,13 @@ if uploaded_file:
         else:
             st.write("No contact information found.")
 
-        # Skills
-        st.subheader("Skills")
         skills = resume_data.get("skills", [])
         if skills:
-            st.table(pd.DataFrame(skills, columns=["Skill"]))
+            st.subheader("Detected Skills Table")
+            st.dataframe(pd.DataFrame(skills))
         else:
             st.write("No skills detected.")
+
 
         # Education
         st.subheader("Education")
